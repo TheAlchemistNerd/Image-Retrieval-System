@@ -1,0 +1,57 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ system files
+out/
+.idea_modules/
+*.swp
+
+# Maven
+target/
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+*.log
+
+# Build output
+*.class
+*.jar
+*.war
+*.ear
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs and crash dumps
+hs_err_pid*.log
+
+# Virtual files
+*.tmp
+*.bak
+*.old
+
+# Image data caches (if applicable)
+dataset_cache/
+.cache/
+*.ndjson
+*.h5
+
+# DJL downloaded models (optional, if you're caching model zoo locally)
+models/
+build/models/
+
+# Optional: If using Python integration or Jupyter
+*.ipynb
+__pycache__/
+*.pyc
+
+# IDE-specific (NetBeans, VSCode, etc. - remove if not relevant)
+nbproject/
+.vscode/
+*.code-workspace
