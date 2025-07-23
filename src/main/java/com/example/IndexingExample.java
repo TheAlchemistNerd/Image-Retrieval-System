@@ -1,4 +1,4 @@
-package com.app;
+package com.example;
 
 import com.retrieval.features.extractor.Extractable;
 import com.retrieval.features.ExtractorFactory;
