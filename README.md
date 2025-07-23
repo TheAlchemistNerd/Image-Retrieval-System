@@ -36,28 +36,28 @@ For searching, the system offers multiple strategies, including a brute-force li
 
 The system is organized into several key packages, each with a distinct responsibility:
 
-### `com.retrieval.features`: The heart of the feature extraction logic.
+### `main.retrieval.features`: The heart of the feature extraction logic.
 
 - **ExtractorFactory**: A factory class that acts as the primary entry point for feature extraction. It uses the `RuleEngine` to delegate the choice of extractor.
 - **extractor**: Contains implementations of the `Extractable` interface (e.g., `ORBExtractor`, `DJLExtractor`). Each class is responsible for a single feature extraction algorithm.
 - **rules**: Houses the `RuleEngine` and the individual `ExtractorRule` implementations (`FileSizeRule`, `ResolutionRule`, etc.). This package embodies the dynamic strategy selection.
 
-### `com.retrieval.indexing`: Responsible for creating spatial data structures for efficient searching.
+### `main.retrieval.indexing`: Responsible for creating spatial data structures for efficient searching.
 
 - **KDTreeBuilder**: Constructs the K-D Tree.
 - **KDNode**: Represents a node within the K-D Tree.
 
-### `com.retrieval.search`: Contains the logic for performing similarity searches.
+### `main.retrieval.search`: Contains the logic for performing similarity searches.
 
 - **interfaces**: Defines the contracts for search strategies (`Searchable`, `Buildable`, `Insertable`).
 - **implementations**: Provides concrete search strategies like `DeepMetricSearch` and `BestBinFirstSearch`.
 - **annotations**: Includes custom annotations like `@SearchCapabilities` to provide metadata about the search strategies.
 
-### `com.retrieval.models`: Defines the core data structures.
+### `main.retrieval.models`: Defines the core data structures.
 
 - **ImageFeature**: A simple POJO that encapsulates an image identifier and its corresponding numerical feature vector.
 
-### `com.retrieval.utils`: A collection of utility classes.
+### `main.retrieval.utils`: A collection of utility classes.
 
 - **FeatureUtils**: Provides static methods for mathematical operations on feature vectors, such as normalization and distance calculations.
 
@@ -93,11 +93,11 @@ The system is designed to be used as a library within a larger application. Here
 ### Step 1: Indexing a Collection of Images
 
 ```java
-import com.retrieval.features.ExtractorFactory;
-import com.retrieval.features.extractor.Extractable;
-import com.retrieval.models.ImageFeature;
-import com.retrieval.search.implementations.DeepMetricSearch;
-import com.retrieval.search.interfaces.Buildable;
+import main.java.com.retrieval.features.ExtractorFactory;
+import main.java.com.retrieval.features.extractor.Extractable;
+import main.java.com.retrieval.models.ImageFeature;
+import main.java.com.retrieval.search.implementations.DeepMetricSearch;
+import main.java.com.retrieval.search.interfaces.Buildable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -135,10 +135,10 @@ public class IndexingExample {
 ### Step 2: Querying for Similar Images
 
 ```java
-import com.retrieval.features.ExtractorFactory;
-import com.retrieval.features.extractor.Extractable;
-import com.retrieval.models.ImageFeature;
-import com.retrieval.search.interfaces.Searchable;
+import main.java.com.retrieval.features.ExtractorFactory;
+import main.java.com.retrieval.features.extractor.Extractable;
+import main.java.com.retrieval.models.ImageFeature;
+import main.java.com.retrieval.search.interfaces.Searchable;
 
 import java.util.List;
 
@@ -176,7 +176,7 @@ This section outlines the plan for comprehensive testing and future enhancements
 
 The goal is to achieve high test coverage for individual components, ensuring they behave as expected in isolation and handle edge cases gracefully.
 
-#### `com.retrieval.utils.FeatureUtils`:
+#### `main.retrieval.utils.FeatureUtils`:
 
 - `normalize`: Test with zero vectors, non-zero vectors, and already normalized vectors. Verify in-place modification.
 - `normalizedCopy`: Verify it returns a new normalized vector and does not modify the original.
@@ -186,7 +186,7 @@ The goal is to achieve high test coverage for individual components, ensuring th
 - `isNormalized`: Test with vectors that are normalized, not normalized, and close to the tolerance threshold.
 - `calculateStatistics`: Test with a sample vector and verify the calculated mean, stddev, min, and max.
 
-#### `com.retrieval.features.extractor.*`:
+#### `main.retrieval.features.extractor.*`:
 
 For each extractor (`ORBExtractor`, `BoofCVExtractor`, `DJLExtractor`, `DL4JExtractor`):
 
@@ -196,20 +196,20 @@ For each extractor (`ORBExtractor`, `BoofCVExtractor`, `DJLExtractor`, `DL4JExtr
 - Test with a null or empty image path string: expect `IllegalArgumentException`.
 - Verify that the output vector is L2 normalized.
 
-#### `com.retrieval.features.rules.*`:
+#### `main.retrieval.features.rules.*`:
 
 - `FileSizeRule`: Test with a file smaller than the threshold (expect `ORBExtractor`) and a file larger than the threshold (expect `null`).
 - `ResolutionRule`: Test with a high-res image (expect `DJLExtractor`) and a low-res image (expect `null`).
 - `MetadataCameraRule`: Create mock image files with and without EXIF camera model tags ("Canon", "Nikon", "Sony"). Verify it returns `DL4JExtractor` when the tag is present and null otherwise.
 - `RuleEngine`: Mock the list of rules. Test the chain of responsibility: ensure the first rule that returns a non-null result is used. Test the fallback case where no rules match (expect `BoofCVExtractor`).
 
-#### `com.retrieval.indexing.KDTreeBuilder`:
+#### `main.retrieval.indexing.KDTreeBuilder`:
 
 - Test with an empty list of features (expect null root).
 - Test with a list of features having different dimensions (should ideally be handled before this stage, but good to test for robustness).
 - Build a tree with a small, known set of 2D points and manually verify its structure (root, axis, left/right children).
 
-#### `com.retrieval.search.implementations.*`:
+#### `main.retrieval.search.implementations.*`:
 
 **DeepMetricSearch**:
 

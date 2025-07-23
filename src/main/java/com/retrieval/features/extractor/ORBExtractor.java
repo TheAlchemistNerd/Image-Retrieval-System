@@ -1,4 +1,3 @@
-// ORBExtractor.java - Fixed loop logic and added proper normalization
 package com.retrieval.features.extractor;
 
 import org.bytedeco.javacpp.indexer.UByteRawIndexer;

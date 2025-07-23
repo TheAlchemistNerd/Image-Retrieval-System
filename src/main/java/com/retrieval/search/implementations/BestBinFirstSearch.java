@@ -3,10 +3,10 @@ package com.retrieval.search.implementations;
 import com.retrieval.indexing.KDNode;
 import com.retrieval.indexing.KDTreeBuilder;
 import com.retrieval.models.ImageFeature;
+import com.retrieval.utils.FeatureUtils;
 import com.retrieval.search.annotations.SearchCapabilities;
 import com.retrieval.search.interfaces.Buildable;
 import com.retrieval.search.interfaces.Searchable;
-import com.retrieval.utils.FeatureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

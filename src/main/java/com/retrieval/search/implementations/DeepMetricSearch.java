@@ -1,11 +1,11 @@
 package com.retrieval.search.implementations;
 
 import com.retrieval.models.ImageFeature;
+import com.retrieval.search.interfaces.Insertable;
+import com.retrieval.utils.FeatureUtils;
 import com.retrieval.search.annotations.SearchCapabilities;
 import com.retrieval.search.interfaces.Buildable;
-import com.retrieval.search.interfaces.Insertable;
 import com.retrieval.search.interfaces.Searchable;
-import com.retrieval.utils.FeatureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * Search class for deep learning visual embeddings
- * Performs k-NN (k-nearest neighbors) search using cosine distance:
+ * Performs brute force linear scan k-NN (k-nearest neighbors) search using cosine distance:
  */
 @SearchCapabilities(insertable = true, buildable = true, searchable = true)
 public class DeepMetricSearch implements Searchable, Buildable, Insertable {
