@@ -12,7 +12,7 @@ import java.util.List;
 
 public class IndexingExample {
     public static void main(String[] args) {
-        File imageDirectory = new File("C:\\Users\\Nevo\\Documents\\Projects\\Shoes - Pics");
+        File imageDirectory = new File("C:\\Users\\Nevo\\Pictures\\KICKS");
         List<ImageFeature> featureList = new ArrayList<>();
 
         for (File imageFile : imageDirectory.listFiles()) {

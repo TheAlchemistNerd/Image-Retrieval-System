@@ -1,5 +1,6 @@
 package com.retrieval.features.extractor;
 
+import ai.djl.Application;
 import ai.djl.inference.Predictor;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.ImageFactory;
@@ -35,7 +36,9 @@ public class DJLExtractor implements Extractable, AutoCloseable {
         try {
             Criteria<Image, float[]> criteria = Criteria.builder()
                     .setTypes(Image.class, float[].class)
-                    .optModelUrls("djl://ai.djl.pytorch/resnet50")
+                    .optApplication(Application.CV.IMAGE_CLASSIFICATION)
+                    .optFilter("backbone", "resnet50")
+                    .optEngine("PyTorch")
                     .optTranslator(new FeatureExtractorTranslator())
                     .optProgress(new ai.djl.training.util.ProgressBar())
                     .build();
@@ -78,7 +81,7 @@ public class DJLExtractor implements Extractable, AutoCloseable {
 
         @Override
         public NDList processInput(TranslatorContext ctx, Image input) {
-            // Convert Image to NDArray first
+            // Convert Image to NDList first
             NDList array = new NDList(input.toNDArray(ctx.getNDManager()));
 
             Pipeline pipeline = new Pipeline();
@@ -87,7 +90,7 @@ public class DJLExtractor implements Extractable, AutoCloseable {
                     .add(new ToTensor())
                     .add(new Normalize(IMAGENET_MEAN, IMAGENET_STD));
 
-            // Apply transforms to the NDArray
+            // Apply transforms to the NDList
             array = pipeline.transform(array);
             return array;
         }

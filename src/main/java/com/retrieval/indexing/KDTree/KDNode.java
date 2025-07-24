@@ -1,4 +1,4 @@
-package com.retrieval.indexing;
+package com.retrieval.indexing.KDTree;
 
 import com.retrieval.models.ImageFeature;
 

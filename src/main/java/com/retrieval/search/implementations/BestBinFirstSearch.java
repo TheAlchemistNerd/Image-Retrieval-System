@@ -1,7 +1,7 @@
 package com.retrieval.search.implementations;
 
-import com.retrieval.indexing.KDNode;
-import com.retrieval.indexing.KDTreeBuilder;
+import com.retrieval.indexing.KDTree.KDNode;
+import com.retrieval.indexing.KDTree.KDTreeBuilder;
 import com.retrieval.models.ImageFeature;
 import com.retrieval.utils.FeatureUtils;
 import com.retrieval.search.annotations.SearchCapabilities;

@@ -41,7 +41,7 @@ public class DeepMetricSearch implements Searchable, Buildable, Insertable {
     }
 
     @Override
-    public void insert(ImageFeature feature) { // Fixed missing semicolon
+    public void insert(ImageFeature feature) {
         if (feature == null) {
             throw new IllegalArgumentException("Feature cannot be null");
         }
