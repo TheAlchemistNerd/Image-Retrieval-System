@@ -16,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Feature extractor using DJL and a pre-trained ResNet50 model.
+ * Feature extractor using DJL and a pre-trained ResNet50 model with caching.
  */
 public class DJLExtractor implements Extractable, AutoCloseable {
 
@@ -29,6 +31,9 @@ public class DJLExtractor implements Extractable, AutoCloseable {
     private static final float[] IMAGENET_MEAN = {0.485f, 0.456f, 0.406f};
     private static final float[] IMAGENET_STD = {0.229f, 0.224f, 0.225f};
 
+    // Cache directory for models (DJL's default cache location)
+    private static final String MODEL_CACHE_DIR = System.getProperty("user.home") + "/.djl/cache/repo";
+
     private ZooModel<Image, float[]> model;
     private Predictor<Image, float[]> predictor;
 
@@ -37,15 +42,17 @@ public class DJLExtractor implements Extractable, AutoCloseable {
             Criteria<Image, float[]> criteria = Criteria.builder()
                     .setTypes(Image.class, float[].class)
                     .optApplication(Application.CV.IMAGE_CLASSIFICATION)
-                    .optFilter("backbone", "resnet50")
+                    .optFilter("layers", "50")
+                    .optFilter("dataset", "imagenet")
                     .optEngine("PyTorch")
+                    // Remove optModelPath to allow downloading from model zoo
                     .optTranslator(new FeatureExtractorTranslator())
                     .optProgress(new ai.djl.training.util.ProgressBar())
                     .build();
 
             this.model = ModelZoo.loadModel(criteria);
             this.predictor = model.newPredictor();
-            log.info("DJL ResNet50 model loaded successfully.");
+            log.info("DJL ResNet50 model loaded successfully");
         } catch (Exception e) {
             log.error("Failed to load DJL ResNet50 model", e);
         }
@@ -58,8 +65,20 @@ public class DJLExtractor implements Extractable, AutoCloseable {
             return new double[0];
         }
 
+        // Input validation
+        if (imagePath == null || imagePath.isEmpty()) {
+            log.error("DJLExtractor: Image path cannot be null or empty.");
+            return new double[0];
+        }
+
+        Path path = Paths.get(imagePath);
+        if (!Files.exists(path)) {
+            log.error("DJLExtractor: Image file not found: {}", imagePath);
+            return new double[0];
+        }
+
         try {
-            Image image = ImageFactory.getInstance().fromFile(Paths.get(imagePath));
+            Image image = ImageFactory.getInstance().fromFile(path);
             float[] features = predictor.predict(image);
 
             double[] featureVector = new double[features.length];
@@ -74,6 +93,61 @@ public class DJLExtractor implements Extractable, AutoCloseable {
         } catch (IOException | TranslateException e) {
             log.error("Error extracting features from image: {}", imagePath, e);
             return new double[0];
+        }
+    }
+
+    /**
+     * Clear the model cache directory
+     */
+    public static void clearCache() {
+        try {
+            Path cacheDir = Paths.get(MODEL_CACHE_DIR);
+            if (Files.exists(cacheDir)) {
+                Files.walk(cacheDir)
+                        .sorted((a, b) -> b.compareTo(a)) // Delete files before directories
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                log.warn("Failed to delete cache file: {}", path, e);
+                            }
+                        });
+                log.info("DJL model cache cleared: {}", cacheDir);
+            }
+        } catch (IOException e) {
+            log.error("Failed to clear DJL model cache", e);
+        }
+    }
+
+    /**
+     * Get cache directory info
+     */
+    public static String getCacheInfo() {
+        Path cacheDir = Paths.get(MODEL_CACHE_DIR);
+        if (!Files.exists(cacheDir)) {
+            return "Cache directory does not exist: " + cacheDir;
+        }
+
+        try {
+            long size = Files.walk(cacheDir)
+                    .filter(Files::isRegularFile)
+                    .mapToLong(path -> {
+                        try {
+                            return Files.size(path);
+                        } catch (IOException e) {
+                            return 0;
+                        }
+                    })
+                    .sum();
+
+            long count = Files.walk(cacheDir)
+                    .filter(Files::isRegularFile)
+                    .count();
+
+            return String.format("Cache directory: %s, Files: %d, Size: %.2f MB",
+                    cacheDir, count, size / (1024.0 * 1024.0));
+        } catch (IOException e) {
+            return "Error reading cache directory: " + e.getMessage();
         }
     }
 
